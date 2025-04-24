@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_project/home.dart';
 import 'package:flutter_project/profile.dart'; 
 
 enum MenuItem {home, add}
+enum ProfileAction { profile, logout }
 
 class Appbar extends StatelessWidget implements PreferredSizeWidget{
   const Appbar({super.key});
@@ -61,9 +63,8 @@ class Appbar extends StatelessWidget implements PreferredSizeWidget{
       decoration: const BoxDecoration(
         color: Colors.white,
         boxShadow: [BoxShadow(
-          color: Colors.black,
-          blurRadius: 5,
-          offset: Offset(0, 2)
+          color: Color.fromARGB(87, 0, 0, 0),
+          blurRadius: 8,
         )]
       ),
 
@@ -123,11 +124,34 @@ class Appbar extends StatelessWidget implements PreferredSizeWidget{
                   final user = snapshot.data;
 
                   if (user != null){
-                    return IconButton(
-                      onPressed: ()=> Navigator.pushNamed(context, ProfileScreen.routeName), 
-                      icon: Icon(Icons.circle),
-                      color: Colors.blue,
-                      iconSize: 32
+                    return PopupMenuButton<ProfileAction>(
+                      icon: Icon(Icons.circle, size: 32, color: Colors.blue), 
+                      offset: Offset(0, 50),
+                      color: Colors.white,
+                      elevation: 8,
+                      shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                      onSelected: (action) {
+                        switch (action) {
+                          case ProfileAction.profile:
+                            Navigator.pushNamed(context, ProfileScreen.routeName);
+                            break;
+                          case ProfileAction.logout:
+                            FirebaseAuth.instance.signOut();
+                            Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+                            break;
+                        }
+                      },
+                      itemBuilder: (ctx) => [
+                        PopupMenuItem(
+                          value: ProfileAction.profile,
+                          child: Text('View Profile'),
+                        ),
+                        PopupMenuItem(
+                          value: ProfileAction.logout,
+                          child: Text('Sign Out'),
+                        ),
+                      ],
                     );
                   }
 
