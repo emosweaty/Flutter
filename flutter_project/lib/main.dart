@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_project/login/auth_Service.dart';
 import 'package:flutter_project/login/auth_model.dart';
+import 'package:flutter_project/profile.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 
@@ -40,7 +41,8 @@ class MyApp extends StatelessWidget {
         HomeScreen.routeName: (context) => const HomeScreen(),
         LoginScreen.routeName: (context) => const LoginScreen(),
         SignUpScreen.routeName: (context) => const SignUpScreen(),
-        AddScreen.routeName: (context) => const AddScreen()
+        AddScreen.routeName: (context) => const AddScreen(),
+        ProfileScreen.routeName: (context) => const ProfileScreen()
       },
     );
   }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_project/profile.dart'; 
 
 enum MenuItem {home, add}
 
@@ -115,10 +117,21 @@ class Appbar extends StatelessWidget implements PreferredSizeWidget{
                   )
               ),
 
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ElevatedButton(
+              StreamBuilder<User?>(
+                stream: FirebaseAuth.instance.authStateChanges(), 
+                builder: (context, snapshot){
+                  final user = snapshot.data;
+
+                  if (user != null){
+                    return IconButton(
+                      onPressed: ()=> Navigator.pushNamed(context, ProfileScreen.routeName), 
+                      icon: Icon(Icons.circle),
+                      color: Colors.blue,
+                      iconSize: 32
+                    );
+                  }
+
+                  return ElevatedButton(
                     onPressed: () => Navigator.pushNamed(context, '/login'),
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
@@ -133,9 +146,9 @@ class Appbar extends StatelessWidget implements PreferredSizeWidget{
                         fontWeight: FontWeight.bold
                       ),
                     ),
-                  ),
-                ],
-              )
+                  );
+                }
+                )
             ],
           ),
         ),
