@@ -59,6 +59,13 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  fonts:
+    - family: 'Dongle'
+      fonts:
+        - asset: web/fonts/Dongle-Regular.ttf
+        - asset: web/fonts/Dongle-Light.ttf
+        - asset: web/fonts/Dongle-Bold.ttf
+
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

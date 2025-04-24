@@ -1,0 +1,145 @@
+import 'package:flutter/material.dart';
+
+enum MenuItem {home, add}
+
+class Appbar extends StatelessWidget implements PreferredSizeWidget{
+  const Appbar({super.key});
+
+  @override
+  Size get preferredSize => const Size.fromHeight(65);
+
+  @override
+  Widget build(BuildContext context) {
+    final route = ModalRoute.of(context)?.settings.name;
+
+    final selected  = (){
+      switch (route){
+        case '/home':
+          return MenuItem.home;
+        case '/add':
+          return MenuItem.add;
+        default:
+          return MenuItem.home;
+      }
+    }();
+
+    Widget buildIcon({
+      required IconData icon,
+      required MenuItem item,
+      required VoidCallback ontap,
+    }){
+      final isSelected = selected == item;
+
+      return InkWell(
+        onTap: ontap,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon,
+              size: 30,
+              color: isSelected ? const Color.fromARGB(255, 116, 220, 238) : const Color.fromARGB(255, 194, 195, 200)
+            ),
+            const SizedBox(height: 5),
+
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              height: 3,
+              width: 24,
+              decoration: BoxDecoration(
+                color: isSelected ? Colors.blueAccent : Colors.transparent,
+                borderRadius: BorderRadius.circular(2)
+              ),
+            )
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        boxShadow: [BoxShadow(
+          color: Colors.black,
+          blurRadius: 5,
+          offset: Offset(0, 2)
+        )]
+      ),
+
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 45),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: Text(
+                  'BorrowBuddy',
+                  style: TextStyle(
+                    fontFamily: 'Dongle',
+                    fontSize: 45,
+                    fontWeight: FontWeight.bold,
+                    color: const Color.fromARGB(255, 116, 220, 238)
+                  ),
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: 
+                  Row(
+                    children: [
+
+                      buildIcon(
+                        icon: Icons.home, 
+                        item: MenuItem.home, 
+                        ontap: (){
+                          if (route != '/home'){
+                            Navigator.pushReplacementNamed(context, '/home');
+                          }
+                        }
+                      ),
+                      
+                      const SizedBox(width: 20),
+
+                      buildIcon(
+                        icon: Icons.add, 
+                        item: MenuItem.add, 
+                        ontap: (){
+                          if (route != '/add'){
+                            Navigator.pushReplacementNamed(context, '/add');
+                          }
+                        }
+                      ),
+                    ],
+                  )
+              ),
+
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ElevatedButton(
+                    onPressed: () => Navigator.pushNamed(context, '/login'),
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)
+                      ),
+                      backgroundColor: Colors.blueAccent,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text(
+                      'Sign In',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

@@ -19,8 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-return Scaffold(
-    backgroundColor: const Color.fromRGBO(5, 240, 205, 1),
+    return Scaffold(
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 400),
