@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_project/home.dart';
-import 'package:flutter_project/profile.dart'; 
+import 'package:flutter_project/screens/home.dart';
+import 'package:flutter_project/screens/profile.dart'; 
 
 enum MenuItem {home, add}
 enum ProfileAction { profile, logout }

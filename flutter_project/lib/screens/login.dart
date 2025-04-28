@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_project/login.dart';
 import 'package:flutter_project/login/form.dart';
+import 'package:flutter_project/screens/signup.dart';
 import 'home.dart';
 
-class SignUpScreen extends StatefulWidget {
-  static const String routeName = '/signup';
+class LoginScreen extends StatefulWidget {
+  static const String routeName = '/login';
 
-  const SignUpScreen({super.key});
+  const LoginScreen({super.key});
 
   @override
-  State<SignUpScreen> createState() => SignUpScreenState();
+  State<LoginScreen> createState() => LoginScreenState();
 }
 
-class SignUpScreenState extends State<SignUpScreen>{
+class LoginScreenState extends State<LoginScreen>{
   final email = TextEditingController();
   final passwd = TextEditingController();
   bool isLoading = false;
   String? error;
 
-  Future<void> signUp() async{
+  Future<void> signIn() async{
     setState(() {
       isLoading = true;
       error = null;
     });
 
     try{
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email.text.trim(), 
         password: passwd.text.trim()
       );
@@ -62,18 +62,18 @@ class SignUpScreenState extends State<SignUpScreen>{
               passwd: passwd,
               isLoading: isLoading,
               error: error,
-              onSubmit: signUp,
-              btnLabel: 'Sign Up',
-              label: 'Already have an account?',
-              hreflabel: 'Sign In',
-              routeName: LoginScreen.routeName,
+              onSubmit: signIn,
+              btnLabel: 'Sign In',
+              label: "Don't have an account?",
+              hreflabel: 'Sign Up',
+              routeName: SignUpScreen.routeName,
             ),
+           
           ],
         )
       ),
     );
   }
-
 
   @override
   void dispose() {
