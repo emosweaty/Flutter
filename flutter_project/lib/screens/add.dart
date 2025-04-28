@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_project/screens/home.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddScreen extends StatefulWidget {
@@ -22,6 +24,7 @@ class AddScreenState extends State<AddScreen> {
   Uint8List? pickedImage;
   bool isLoading = false;
   String? error;
+  String billingType = 'Free';
 
   final picker = ImagePicker();
 
@@ -83,7 +86,7 @@ class AddScreenState extends State<AddScreen> {
         'createdAt'   : DateTime.now(),
       });
 
-      Navigator.pop(context);
+      Navigator.pushReplacementNamed(context, HomeScreen.routeName);
     } catch (e) {
       setState(() => error = 'Error: $e');
     } finally {
@@ -119,11 +122,30 @@ class AddScreenState extends State<AddScreen> {
             ),
             const SizedBox(height: 16),
 
+            DropdownButtonFormField<String>(
+              value: billingType,
+              decoration: const InputDecoration(labelText: 'Billing Type'),
+              items: const [
+                DropdownMenuItem(value: 'Free', child: Text('Free')),
+                DropdownMenuItem(value: 'Paid', child: Text('Paid')),
+              ],
+              onChanged: (val) {
+                setState(() => billingType = val!);
+              },
+            ),
+            if (billingType == 'Paid') ...[
+
             TextField(
               controller: priceContrl,
-              decoration: const InputDecoration(labelText: 'Price (leave blank to borrow)'),
-              keyboardType: TextInputType.number,
-            ),
+              decoration: const InputDecoration(labelText: 'Price'),
+              keyboardType: const TextInputType.numberWithOptions(
+              decimal: true,
+              signed:  false,
+    ),
+    inputFormatters: [
+      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+    ],
+            ),],
             const SizedBox(height: 16),
 
             ElevatedButton.icon(
