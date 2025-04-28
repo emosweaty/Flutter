@@ -9,6 +9,7 @@ class Item {
   final String? image;
   final String ownerUid;
   final DateTime? createdAt;
+  final String category;
 
   Item({
     required this.id,
@@ -19,6 +20,7 @@ class Item {
     required this.ownerUid,
     this.image,
     this.createdAt,
+    required this.category,
   });
 
   factory Item.fromFirestore(String id, Map<String, dynamic> data) {
@@ -31,6 +33,7 @@ class Item {
       image: data['image'],
       ownerUid: data['ownerUid'] ?? '',
       createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
+      category: data['category'] ?? ''
     );
   }
 
@@ -43,6 +46,7 @@ class Item {
       'image': image,
       'ownerUid': ownerUid,
       'createdAt': createdAt ?? DateTime.now(),
+      'category': category
     };
   }
 }

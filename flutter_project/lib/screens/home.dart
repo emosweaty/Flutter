@@ -17,22 +17,35 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
+  String? selectedCategory;
+  String? selectedCity;
   late Future<List<Item>> items;
 
   @override
   void initState() {
     super.initState();
-    items = _fetchItems();
+    items = fetchItems();
   }
 
-  Future<List<Item>> _fetchItems() async {
-    final snap = await FirebaseFirestore.instance
+   void loadItems() {
+    items = fetchItems(
+      category: selectedCategory,
+      city:     selectedCity,
+    );
+    setState(() {});
+  }
+
+  Future<List<Item>> fetchItems({String? category, String? city}) async {
+    var ref = FirebaseFirestore.instance
         .collection('ads')
-        .orderBy('createdAt', descending: true)
-        .get();
-    return snap.docs
-        .map((doc) => Item.fromFirestore(doc.id, doc.data()))
-        .toList();
+        .orderBy('createdAt', descending: true);
+
+    if (category != null) ref = ref.where('category', isEqualTo: category);
+    if (city     != null) ref = ref.where('city',     isEqualTo: city);
+
+    final snap = await ref.get();
+    return snap.docs.map((d) => Item.fromFirestore(d.id, d.data())).toList();
+
   }
 
   @override
@@ -60,9 +73,39 @@ class HomeScreenState extends State<HomeScreen> {
               child: ListView(
                 padding: EdgeInsets.all(10),
                 children: [
-                  Text('Filter'),
+                  const Text('Filter by Category'),
+                    DropdownButton<String>(
+                      value: selectedCategory,
+                      hint: const Text('All'),
+                      items: const [
+                        DropdownMenuItem(value: null, child: Text('All')),
+                        DropdownMenuItem(value: 'kitchen', child: Text('Kitchen')),
+                        DropdownMenuItem(value: 'garden', child: Text('Garden')),
+                        DropdownMenuItem(value: 'electronics', child: Text('Electronics')),
+                        DropdownMenuItem(value: 'sport', child: Text('Sport')),
+                        DropdownMenuItem(value: 'other', child: Text('Other')),
+                      ],
+                      onChanged: (val) {
+                        setState(() => selectedCategory = val);
+                        loadItems();
+                      },
+                    ),
 
-                  SizedBox(height: 12),
+                    const SizedBox(height: 20),
+                    const Text('Filter by City'),
+                    DropdownButton<String>(
+                      value: selectedCity,
+                      hint: const Text('All'),
+                      items: [
+                        const DropdownMenuItem(value: null, child: Text('All')),
+                        DropdownMenuItem(value: "dessel", child: Text('dessel')),
+                        DropdownMenuItem(value: 'Antwerp', child: Text('Antwerp')),
+                      ],
+                      onChanged: (val) {
+                        setState(() => selectedCity = val);
+                        loadItems();
+                      },
+                    ),
                   
                 ],
               ),
@@ -87,57 +130,58 @@ class HomeScreenState extends State<HomeScreen> {
                   Expanded(
                     child: FutureBuilder<List<Item>>(
                       future: items,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState !=
-                            ConnectionState.done) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-                        if (snapshot.hasError) {
-                          return Center(
-                              child:
-                                  Text('Error: ${snapshot.error}'));
-                        }
-                        final items = snapshot.data!;
-                        if (items.isEmpty) {
-                          return const Center(
-                              child: Text('No items available'));
-                        }
-
-                        return GridView.builder(
-                          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 300,
-                            mainAxisSpacing: 16,
-                            crossAxisSpacing: 16,
-                            childAspectRatio: 0.8,
-                          ),
-                          itemCount: items.length,
-                          itemBuilder: (context, index) {
-                            final item = items[index];
-                            return Card(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                        builder: (ctx, snap) {
+                          if (snap.connectionState != ConnectionState.done) {
+                            return const Center(child: CircularProgressIndicator());
+                          }
+                          if (snap.hasError) {
+                            return Center(
+                              child: Text(
+                                'Error loading items:\n${snap.error}',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(color: Colors.red),
                               ),
-                              clipBehavior: Clip.antiAlias,
-                              child: Column(
-                                children: [
-                                  Expanded(
-                                    flex: 3,
-                                    child: () {
-                                      final String? b64 = item.image;
-                                      if (b64 != null && b64.isNotEmpty) {
-                                        final Uint8List bytes = base64Decode(b64);
-                                        return Image.memory(
-                                          bytes,
+                            );
+                          }
+                          final items = snap.data ?? [];
+                          if (items.isEmpty) {
+                            return const Center(child: Text('No items match your filters.'));
+                          }
+
+                          return GridView.builder(
+                            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent: 300,
+                              mainAxisSpacing: 16,
+                              crossAxisSpacing: 16,
+                              childAspectRatio: 0.8,
+                            ),
+                            itemCount: items.length,
+                            itemBuilder: (context, index) {
+                              final item = items[index];
+                              return Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                clipBehavior: Clip.antiAlias,
+                                  child: Column(
+                                    children: [
+                                      Expanded(
+                                        flex: 3,
+                                        child: () {
+                                          final String? b64 = item.image;
+                                          if (b64 != null && b64.isNotEmpty) {
+                                            final Uint8List bytes = base64Decode(b64);
+                                            return Image.memory(
+                                              bytes,
+                                              width: double.infinity,
+                                              fit: BoxFit.cover,
+                                            );
+                                        }
+                                        return Container(
                                           width: double.infinity,
-                                          fit: BoxFit.cover,
+                                          color: Colors.grey[200],
+                                          child: const Center(child: Icon(Icons.image, size: 48)),
                                         );
-                                      }
-                                      return Container(
-                                        width: double.infinity,
-                                        color: Colors.grey[200],
-                                        child: const Center(child: Icon(Icons.image, size: 48)),
-                                      );
                                     }(),
                                   ),
 

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -25,6 +24,7 @@ class AddScreenState extends State<AddScreen> {
   bool isLoading = false;
   String? error;
   String billingType = 'Free';
+  String? selectedCategory;
 
   final picker = ImagePicker();
 
@@ -60,6 +60,11 @@ class AddScreenState extends State<AddScreen> {
       return;
     }
 
+    if (selectedCategory == null) {
+      setState(() => error = 'Category required');
+      return;
+    }
+
     setState(() {
       isLoading = true;
       error     = null;
@@ -77,13 +82,14 @@ class AddScreenState extends State<AddScreen> {
       }
 
       await FirebaseFirestore.instance.collection('ads').add({
-        'title'       : title,
-        'description' : desc,
-        'city'        : city,
-        'price'       : setPrice,
-        'image' : image,
-        'ownerUid'    : user.uid,
-        'createdAt'   : DateTime.now(),
+        'title': title,
+        'description': desc,
+        'city': city,
+        'price': setPrice,
+        'image': image,
+        'ownerUid': user.uid,
+        'createdAt': DateTime.now(),
+        'category': selectedCategory
       });
 
       Navigator.pushReplacementNamed(context, HomeScreen.routeName);
@@ -107,6 +113,7 @@ class AddScreenState extends State<AddScreen> {
               controller: titleContrl,
               decoration: const InputDecoration(labelText: 'Title'),
             ),
+
             const SizedBox(height: 16),
 
             TextField(
@@ -141,11 +148,29 @@ class AddScreenState extends State<AddScreen> {
               keyboardType: const TextInputType.numberWithOptions(
               decimal: true,
               signed:  false,
-    ),
-    inputFormatters: [
-      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
-    ],
-            ),],
+              ),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+              ],
+            ),
+          ],
+
+            DropdownButtonFormField<String>(
+              value: selectedCategory,
+              decoration: const InputDecoration(labelText: 'Category'),
+              items: const [
+                DropdownMenuItem(value: 'kitchen', child: Text('Kitchen')),
+                DropdownMenuItem(value: 'cleaning', child: Text('Cleaning')),
+                DropdownMenuItem(value: 'garden', child: Text('Garden')),
+                DropdownMenuItem(value: 'electronics', child: Text('Electronics')),
+                DropdownMenuItem(value: 'sport', child: Text('Sport')),
+                DropdownMenuItem(value: 'other', child: Text('Other')),
+              ],
+              onChanged: (val) {
+                setState(() => selectedCategory = val!);
+              },
+            ),
+            
             const SizedBox(height: 16),
 
             ElevatedButton.icon(

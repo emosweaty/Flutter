@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_project/login/auth_Service.dart';
 import 'package:flutter_project/login/auth_model.dart';
 import 'package:flutter_project/screens/profile.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 
