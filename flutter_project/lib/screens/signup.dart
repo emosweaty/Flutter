@@ -15,6 +15,7 @@ class SignUpScreen extends StatefulWidget {
 
 class SignUpScreenState extends State<SignUpScreen>{
   final email = TextEditingController();
+  final username = TextEditingController();
   final passwd = TextEditingController();
   bool isLoading = false;
   String? error;
@@ -26,10 +27,12 @@ class SignUpScreenState extends State<SignUpScreen>{
     });
 
     try{
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final cred =await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email.text.trim(), 
         password: passwd.text.trim()
       );
+
+      await cred.user!.updateDisplayName(username.text.trim());
 
       if (!mounted) return;
 
@@ -59,6 +62,7 @@ class SignUpScreenState extends State<SignUpScreen>{
           children: [
             AuthForm(
               email: email,
+              username: username,
               passwd: passwd,
               isLoading: isLoading,
               error: error,

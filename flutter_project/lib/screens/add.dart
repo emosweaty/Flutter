@@ -67,7 +67,10 @@ class AddScreenState extends State<AddScreen> {
     final title = titleContrl.text.trim();
     final desc  = descContrl.text.trim();
     final rawPrice = priceContrl.text.trim();
-    final setPrice = rawPrice.isEmpty ? 'To Borrow' : rawPrice;
+    final setPrice = rawPrice.isEmpty ? 'Free' : rawPrice;
+
+    final user = FirebaseAuth.instance.currentUser!;
+    final username = user.displayName ?? 'Unknown';
 
     if (title.isEmpty || desc.isEmpty) {
       setState(() => error = 'Title & description required');
@@ -106,6 +109,7 @@ class AddScreenState extends State<AddScreen> {
         'price': setPrice,
         'image': image,
         'ownerUid': user.uid,
+        'username': username,
         'createdAt': DateTime.now(),
         'category': selectedCategory,
         'latitude': selectedLocation!.latitude,

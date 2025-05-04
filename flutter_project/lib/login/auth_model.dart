@@ -33,10 +33,10 @@ class AuthModel with ChangeNotifier {
     }
   }
 
-  Future<void> signUp(String email, String passwd) async{
+  Future<void> signUp(String email, String username, String passwd) async{
     setLoading(true);
     try{
-      await service.signUp(email, passwd);
+      await service.signUp(email, passwd, username);
     } on FirebaseAuthException catch (e){
       setError(e.message);
     } finally{

@@ -4,6 +4,7 @@ class AuthForm extends StatelessWidget {
   const AuthForm({
     super.key,
     required this.email,
+    required this.username,
     required this.passwd,
     required this.isLoading,
     this.error,
@@ -15,6 +16,7 @@ class AuthForm extends StatelessWidget {
   });
 
   final TextEditingController email;
+  final TextEditingController username;
   final TextEditingController passwd;
   final bool isLoading;
   final String? error;
@@ -74,6 +76,20 @@ class AuthForm extends StatelessWidget {
 
                   SizedBox(height: 10)
                 ],
+
+                TextField(
+                  controller: username,
+                  decoration: InputDecoration(
+                    hintText: 'username',
+                    border: OutlineInputBorder(),
+                    hintStyle: TextStyle(
+                      fontSize: 15,
+                      color: const Color.fromARGB(255, 189, 189, 189)
+                    ),
+                    ),
+                ),
+
+                SizedBox(height: 10),
 
                 TextField(
                   controller: email,

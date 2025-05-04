@@ -15,6 +15,7 @@ class LoginScreen extends StatefulWidget {
 
 class LoginScreenState extends State<LoginScreen>{
   final email = TextEditingController();
+  final username = TextEditingController();
   final passwd = TextEditingController();
   bool isLoading = false;
   String? error;
@@ -59,6 +60,7 @@ class LoginScreenState extends State<LoginScreen>{
           children: [
             AuthForm(
               email: email,
+              username: username,
               passwd: passwd,
               isLoading: isLoading,
               error: error,

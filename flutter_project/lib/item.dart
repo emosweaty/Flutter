@@ -7,6 +7,7 @@ class Item {
   final String price;
   final String? image;
   final String ownerUid;
+  final String username;
   final DateTime? createdAt;
   final String category;
   final double latitude;
@@ -18,6 +19,7 @@ class Item {
     required this.description,
     required this.price,
     required this.ownerUid,
+    required this.username,
     this.image,
     this.createdAt,
     required this.category,
@@ -33,6 +35,7 @@ class Item {
       price: data['price'] ?? '',
       image: data['image'],
       ownerUid: data['ownerUid'] ?? '',
+      username: data['username'] ?? '',
       createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
       category: data['category'] ?? '',
       latitude:     (data['latitude']    as num?)?.toDouble() ?? 0.0,
@@ -47,6 +50,7 @@ class Item {
       'price': price,
       'image': image,
       'ownerUid': ownerUid,
+      'username': username,
       'createdAt': createdAt ?? DateTime.now(),
       'category': category,
       'latitude'    : latitude,
