@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_project/item.dart';
 import 'package:flutter_project/login/auth_Service.dart';
 import 'package:flutter_project/login/auth_model.dart';
 import 'package:flutter_project/screens/product.dart';
@@ -48,9 +49,9 @@ class MyApp extends StatelessWidget {
 
       onGenerateRoute: (conext) {
         if (conext.name == ProductScreen.routeName) {
-          final args = conext.arguments as String;
+           final item = conext.arguments as Item;
           return MaterialPageRoute(
-            builder: (_) => ProductScreen(productId: args),
+            builder: (_) => ProductScreen(item: item),
           );
         }
         return null;

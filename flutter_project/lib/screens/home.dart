@@ -164,7 +164,7 @@ class HomeScreenState extends State<HomeScreen> {
                                   Navigator.pushNamed(
                                     context,
                                     ProductScreen.routeName,
-                                    arguments: item.id,
+                                    arguments: item,
                                   );
                                 },
                                 child: Card(
