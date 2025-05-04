@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_project/screens/product.dart';
 
 import '../appbar.dart';
 import '../item.dart';
@@ -158,69 +159,78 @@ class HomeScreenState extends State<HomeScreen> {
                             itemCount: items.length,
                             itemBuilder: (context, index) {
                               final item = items[index];
-                              return Card(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                clipBehavior: Clip.antiAlias,
-                                  child: Column(
-                                    children: [
-                                      Expanded(
-                                        flex: 3,
-                                        child: () {
-                                          final String? b64 = item.image;
-                                          if (b64 != null && b64.isNotEmpty) {
-                                            final Uint8List bytes = base64Decode(b64);
-                                            return Image.memory(
-                                              bytes,
-                                              width: double.infinity,
-                                              fit: BoxFit.cover,
-                                            );
-                                        }
-                                        return Container(
-                                          width: double.infinity,
-                                          color: Colors.grey[200],
-                                          child: const Center(child: Icon(Icons.image, size: 48)),
-                                        );
-                                    }(),
+                              return InkWell(
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    ProductScreen.routeName,
+                                    arguments: item.id,
+                                  );
+                                },
+                                child: Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
+                                  clipBehavior: Clip.antiAlias,
+                                    child: Column(
+                                      children: [
+                                        Expanded(
+                                          flex: 3,
+                                          child: () {
+                                            final String? b64 = item.image;
+                                            if (b64 != null && b64.isNotEmpty) {
+                                              final Uint8List bytes = base64Decode(b64);
+                                              return Image.memory(
+                                                bytes,
+                                                width: double.infinity,
+                                                fit: BoxFit.cover,
+                                              );
+                                          }
+                                          return Container(
+                                            width: double.infinity,
+                                            color: Colors.grey[200],
+                                            child: const Center(child: Icon(Icons.image, size: 48)),
+                                          );
+                                      }(),
+                                    ),
 
-                                  Expanded(
-                                    flex: 1,
-                                    child: Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                                      child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(item.title,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 18
+                                    Expanded(
+                                      flex: 1,
+                                      child: Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                                        child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Text(item.title,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18
+                                                  ),
                                                 ),
-                                              ),
-                                              Text('5 KM',
-                                                style: TextStyle(
-                                                  color: Colors.blueAccent,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-
-                                          SizedBox(height: 5),
-
-                                          Text( item.description,
-                                            style: TextStyle(
-                                              fontStyle: FontStyle.italic
+                                                Text('5 KM',
+                                                  style: TextStyle(
+                                                    color: Colors.blueAccent,
+                                                  ),
+                                                )
+                                              ],
                                             ),
-                                          ),
-                                        ],
+
+                                            SizedBox(height: 5),
+
+                                            Text( item.description,
+                                              style: TextStyle(
+                                                fontStyle: FontStyle.italic
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             );
                           },

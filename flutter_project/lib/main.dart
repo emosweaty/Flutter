@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_project/login/auth_Service.dart';
 import 'package:flutter_project/login/auth_model.dart';
+import 'package:flutter_project/screens/product.dart';
 import 'package:flutter_project/screens/profile.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
@@ -42,8 +43,20 @@ class MyApp extends StatelessWidget {
         LoginScreen.routeName: (context) => const LoginScreen(),
         SignUpScreen.routeName: (context) => const SignUpScreen(),
         AddScreen.routeName: (context) => const AddScreen(),
-        ProfileScreen.routeName: (context) => const ProfileScreen()
+        ProfileScreen.routeName: (context) => const ProfileScreen(),
       },
+
+      onGenerateRoute: (conext) {
+        if (conext.name == ProductScreen.routeName) {
+          final args = conext.arguments as String;
+          return MaterialPageRoute(
+            builder: (_) => ProductScreen(productId: args),
+          );
+        }
+        return null;
+      },
+
+      debugShowCheckedModeBanner: false
     );
   }
 }
