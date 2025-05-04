@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_project/appbar.dart';
 import 'package:flutter_project/screens/home.dart';
+import 'package:flutter_project/screens/location.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:latlong2/latlong.dart';
 
 class AddScreen extends StatefulWidget {
   static const routeName = '/add';
@@ -17,14 +20,16 @@ class AddScreen extends StatefulWidget {
 class AddScreenState extends State<AddScreen> {
   final titleContrl = TextEditingController();
   final descContrl  = TextEditingController();
-  final cityContrl  = TextEditingController();
   final priceContrl= TextEditingController();
 
-  Uint8List? pickedImage;
-  bool isLoading = false;
   String? error;
   String billingType = 'Free';
   String? selectedCategory;
+
+  Uint8List? pickedImage;
+  GeoPoint? selectedLocation;
+
+  bool isLoading = false;
 
   final picker = ImagePicker();
 
@@ -39,11 +44,21 @@ class AddScreenState extends State<AddScreen> {
     setState(() => pickedImage = bytes);
   }
 
+  Future<void> pickLocationPopup() async {
+  final LatLng? chosen = await showDialog<LatLng>(
+    context: context,
+    barrierDismissible: true,
+    builder: (ctx) => const LocationPickerPopup(),
+  );
+  if (chosen != null) {
+    setState(() => selectedLocation = GeoPoint(chosen.latitude, chosen.longitude));
+  }
+}
+
   @override
   void dispose() {
     titleContrl.dispose();
     descContrl.dispose();
-    cityContrl.dispose();
     priceContrl.dispose();
     super.dispose();
   }
@@ -51,7 +66,6 @@ class AddScreenState extends State<AddScreen> {
   Future<void> submit() async {
     final title = titleContrl.text.trim();
     final desc  = descContrl.text.trim();
-    final city  = cityContrl.text.trim();
     final rawPrice = priceContrl.text.trim();
     final setPrice = rawPrice.isEmpty ? 'To Borrow' : rawPrice;
 
@@ -62,6 +76,11 @@ class AddScreenState extends State<AddScreen> {
 
     if (selectedCategory == null) {
       setState(() => error = 'Category required');
+      return;
+    }
+
+    if (selectedLocation == null) {
+      setState(() => error = 'Please pick a location.');
       return;
     }
 
@@ -84,12 +103,13 @@ class AddScreenState extends State<AddScreen> {
       await FirebaseFirestore.instance.collection('ads').add({
         'title': title,
         'description': desc,
-        'city': city,
         'price': setPrice,
         'image': image,
         'ownerUid': user.uid,
         'createdAt': DateTime.now(),
-        'category': selectedCategory
+        'category': selectedCategory,
+        'latitude': selectedLocation!.latitude,
+        'longitude': selectedLocation!.longitude,
       });
 
       Navigator.pushReplacementNamed(context, HomeScreen.routeName);
@@ -103,7 +123,7 @@ class AddScreenState extends State<AddScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create New Listing')),
+      appBar: const Appbar(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -123,10 +143,21 @@ class AddScreenState extends State<AddScreen> {
             ),
             const SizedBox(height: 16),
 
-            TextField(
-              controller: cityContrl,
-              decoration: const InputDecoration(labelText: 'City'),
+            ElevatedButton.icon(
+              onPressed: pickLocationPopup,
+              icon: const Icon(Icons.map),
+              label: const Text('Pick Location'),
             ),
+
+            if (selectedLocation != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                'Lat: ${selectedLocation!.latitude.toStringAsFixed(5)}, '
+                'Lon: ${selectedLocation!.longitude.toStringAsFixed(5)}',
+              ),
+            ],
+
+
             const SizedBox(height: 16),
 
             DropdownButtonFormField<String>(
